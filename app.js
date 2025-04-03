@@ -6,13 +6,27 @@ const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
 
-
 const server = http.createServer(app);
 const io = socketIO(server);
 
-io.on("connection", function (socket){
-    console.log("connected from the web browser")
-})
+let waitingusers = [];
+let rooms = {};
+
+io.on("connection", function (socket) {
+  socket.on("joinroom", function () {
+    if (waitingusers.length > 0) {
+      let partner = waitingusers.shift();
+      const roomname = `$(socket.id)-${partner.id}`;
+
+      socket.join(roomname);
+      partner.join(roomname);
+
+      io.to(roomname).emit("joined");
+    } else {
+      waitingusers.push(socket);
+    }
+  });
+});
 
 app.set("view engine", "ejs");
 app.use(express.json());
