@@ -26,6 +26,12 @@ io.on("connection", function (socket) {
       waitingusers.push(socket);
     }
   });
+
+  socket.on("disconnect", function () {
+    let index = waitingusers.findIndex(
+      (waitingUser) => waitingUser.id === socket.io
+    );
+  });
 });
 
 app.set("view engine", "ejs");
