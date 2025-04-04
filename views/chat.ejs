@@ -137,7 +137,9 @@
         <video id="local-video" class="hidden" autoplay></video>
         <video id="remote-video" class="hidden" autoplay></video>
 
-        <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+        <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+            integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+            crossorigin="anonymous"></script>
 
         <script>
             const socket = io();
@@ -146,6 +148,12 @@
             const messagecontainer = document.querySelector("#message-container");
 
             let room;
+
+            document.querySelector('#micButton').addEventListener('click', toggleAudio);
+            document.querySelector('#cameraButton').addEventListener('click', toggleVideo);
+
+
+
 
             socket.emit("joinroom");
 
@@ -374,6 +382,24 @@
                     document.querySelector(".videoblock").classList.add("hidden");
                     socket.emit("signalingMessage", { room, message: JSON.stringify({ type: "hangup" }) });
                     inCall = false;
+                }
+            }
+
+            function toggleAudio() {
+                const audioTracks = localStream.getAudioTracks();
+                if (audioTracks.length > 0) {
+                    const isEnabled = audioTracks[0].enabled;
+                    audioTracks[0].enabled = !isEnabled;
+                    document.querySelector('#micButton').classList.toggle('muted', isEnabled);
+                }
+            }
+
+            function toggleVideo() {
+                const videoTracks = localStream.getVideoTracks();
+                if (videoTracks.length > 0) {
+                    const isEnabled = videoTracks[0].enabled;
+                    videoTracks[0].enabled = !isEnabled;
+                    document.querySelector('#cameraButton').classList.toggle('stopped', isEnabled);
                 }
             }
         </script>
